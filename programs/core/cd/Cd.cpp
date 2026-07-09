@@ -1,0 +1,44 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include "../../../cmdunit/CMDunit.h"
+#include "../../../filesystem/FileSystem.h"
+#include "../../../shell/Shell.h"
+
+class CDcommand : public Command // inheritance
+{
+  public:
+    CDcommand() : Command{"cd", 1, "Changes current directory."}
+    {
+        CommandRegistry::registerCommand("cd", this);
+    }
+    int operate(Shell &shell, std::vector<std::string> cmd_args)
+    {
+        std::string path = cmd_args.front();
+        FileSystemObject *ch_dir = objectLocator(shell.getRootDir(), shell.getCurrentDir(), path);
+
+        if (!ch_dir)
+        {
+            return -1;
+        }
+
+        if (!ch_dir->isDir())
+        {
+            std::cout << "cd: Not a DirectoryObject." << std::endl;
+            return -1;
+        }
+
+        if (!ch_dir->hasPermission('x'))
+        {
+            std::cout << "cd: Permission denied: '" << ch_dir->getName() << "' is not executable (chmod to add 'x')."
+                       << std::endl;
+            return -1;
+        }
+
+        shell.changeCurrentDir(static_cast<DirectoryObject *>(ch_dir));
+        return 0;
+    }
+};
+
+static CDcommand cdCommandInstance;

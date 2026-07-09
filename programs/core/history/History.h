@@ -1,0 +1,29 @@
+#ifndef HISTORY_H
+#define HISTORY_H
+
+#include <string>
+#include <vector>
+
+class Shell;
+#include "../../../cmdunit/CMDunit.h"
+
+/*
+ *
+ *   Author: Kritarth Ranjan
+ *
+ * */
+
+class HistoryCommand : public Command
+{
+  public:
+    HistoryCommand();
+    int operate(Shell &shell, std::vector<std::string> args) override;
+};
+
+class HistoryApp
+{
+  public:
+    int run(const Shell &shell, std::vector<std::string> command_v);
+};
+
+#endif
